@@ -39,17 +39,24 @@ public class DNA {
         int sequenceLength = sequence.length();
         int maxCount = 0;
 
+        sequence = sequence.toUpperCase();
+        STR = STR.toUpperCase();
+
 
         HashMap<Character, Integer> letterMap = new HashMap<>();
         letterMap.put('A', 0);
         letterMap.put('G', 1);
         letterMap.put('T', 2);
         letterMap.put('C', 3);
+        letterMap.put('N', -1);
+
 
 
         int[] numericSTR = new int[strLength];
         for (int i = 0; i < strLength; i++){
-            numericSTR[i] = letterMap.get(STR.charAt(i));
+            if (letterMap.containsKey(STR.charAt(i)) && letterMap.get(STR.charAt(i)) != -1) {
+                numericSTR[i] = letterMap.get(STR.charAt(i));
+            }
         }
 
         for (int i = 0; i < sequenceLength - strLength; i++) {
@@ -68,7 +75,16 @@ public class DNA {
 
     }
 
-    private static boolean matches (sequence, numericSTR, i, letterMap) {
-
+    private static boolean matches (String sequence, int[] numericSTR, int i, HashMap <Character, Integer> letterMap) {
+        for (int j = 0; j < numericSTR.length; j++) {
+            char letter = sequence.charAt(i + j);
+            if (!letterMap.containsKey(letter)) {
+                return false;
+            }
+            else if (letterMap.get(letter) != numericSTR[j]) {
+                return false;
+            }
+        }
+        return true;
     }
 }
