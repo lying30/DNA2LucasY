@@ -35,6 +35,10 @@ public class DNA {
 
         // iterative starting at 0: placeInString
 
+        int strLength = STR.length();
+        int sequenceLength = sequence.length();
+        int maxCount = 0;
+
 
         HashMap<Character, Integer> letterMap = new HashMap<>();
         letterMap.put('A', 0);
@@ -43,6 +47,28 @@ public class DNA {
         letterMap.put('C', 3);
 
 
-        return 0;
+        int[] numericSTR = new int[strLength];
+        for (int i = 0; i < strLength; i++){
+            numericSTR[i] = letterMap.get(STR.charAt(i));
+        }
+
+        for (int i = 0; i < sequenceLength - strLength; i++) {
+            int currentCount = 0;
+
+            while (i+strLength <= sequenceLength && matches(sequence, numericSTR, i, letterMap)) {
+                currentCount++;
+                i += strLength;
+            }
+
+            if (currentCount > maxCount) {
+                maxCount = currentCount;
+            }
+        }
+        return maxCount;
+
+    }
+
+    private static boolean matches (sequence, numericSTR, i, letterMap) {
+
     }
 }
