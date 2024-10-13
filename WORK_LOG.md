@@ -1,9 +1,11 @@
 Name: YOUR NAME HERE
 
-| Date    |  Time  |                                     Update |
-|:--------|:------:|-------------------------------------------:|
-| April 5 | 9-10pm | I tried to write abstract, efficient code. |
-|         |        |                                            |
+| Date       |     Time     |                                                                                                                                                                                                                                                                                                                        Update |
+|:-----------|:------------:|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------:|
+| October 9  |   2:20-3pm   |                                                                                                                                                                                                                                       Spent class tim writing some comments and brainstorming some solutions that could work. |
+| October 10 | 12:40-1:40pm | I talked some ideas out with Mr. Blick utilizing the whiteboard to discuss a solution where we map each letter to a number to create a constant time lookup comparison between two numbers instead of two letters. Also, I continued to update comments and ended feeling confident I knew where to go with my first attempt. |
+| October 13 |     10-      |                                                                                                                                                                                                                                                                                                                               |
+|            |              |                                                                                                                                                                                                                                                                                                                               |
 
 
 To add a new row to the table, click into a cell and then hit shift-enter.
