@@ -8,32 +8,16 @@ import java.util.HashMap;
  * at Menlo School in Atherton, CA
  *</p>
  * <p>
- * Completed by: [YOUR NAME HERE]
+ * Completed by: [Lucas Y]
  *</p>
  */
 
 public class DNA {
 
-    /**
-     * TODO: Complete this function, STRCount(), to return longest consecutive run of STR in sequence.
-     */
+    private static final int R = 256;
+    private static final int P = 1000000007;
+
     public static int STRCount(String sequence, String STR) {
-        // either clean to be all uppercase or lowercase, but worried about runtime of cleaning
-        // map all the indexes of the STR
-        // largest number of indexes next to each other in a row
-        //
-
-
-        // Hash system that allows STR to have a number system associated with it
-        //
-        // go to the index of STR, then if current = sequence.substring(sequence.indexOf(STR)) points to 1
-        // if first substring points to 1 then add 1 to a tally, and then move forward the length of the STR
-        // if there is another STR at that new index after the length of the first STR add another 1 to tally
-        // Then continue until it doesn't point to 1 and points to a null value instead
-        // When it points to the null value, set the tally equal to Largest tally, and then set tally = 0
-        // Repeat method while tracking the new largest tally, and then continuing at the new index of where it is in the sequence
-
-        // iterative starting at 0: placeInString
 
         int strLength = STR.length();
         int sequenceLength = sequence.length();
@@ -42,15 +26,36 @@ public class DNA {
         sequence = sequence.toUpperCase();
         STR = STR.toUpperCase();
 
+        int strHash = hash(STR, strLength);
+        int firstHash = hash(sequence, strLength);
 
-        HashMap<Character, Integer> letterMap = new HashMap<>();
-        letterMap.put('A', 0);
-        letterMap.put('G', 1);
-        letterMap.put('T', 2);
-        letterMap.put('C', 3);
-        letterMap.put('N', -1);
+        // highest power
+        int highestPower = 1;
+        for (int i = 0; i < strLength-1; i++) {
+            highestPower = (highestPower * R) % P
+        }
+
+//        HashMap<Character, Integer> letterMap = new HashMap<>();
+//        letterMap.put('A', 0);
+//        letterMap.put('G', 1);
+//        letterMap.put('T', 2);
+//        letterMap.put('C', 3);
+//        letterMap.put('N', -1);
 
 
+        //CHANGE ALL OF THIS FOR THE POLY ROLLY HASH FUNC >>>
+//PSUEDOCODE
+        // For the rest of the sequence (sequencelenght - strlength)
+        // If the current hash equals to the str hash:
+        //  while current hash substring starting from i + currentcount + strlength equals hash
+        //     increment currentcount
+        //  set max count = to max of max count and currentcount
+        //  move i forward by the (currentcount - 1) * strlength (skips the consecutve matches)
+        // if i is not at the last possible hash to compare in the sequence,
+        //    updatehash by removing the leftmost character and adding the new rightmost character
+        // return maxcount
+
+        // >>>>>
 
         int[] numericSTR = new int[strLength];
         for (int i = 0; i < strLength; i++){
@@ -75,24 +80,32 @@ public class DNA {
 
     }
 
-//    private int hash(String key, int m) {
-//        long h = 0;
-//        for (int j = 0; j < m; j++) {
-//            h = (256*h + key.charAt(j)) % 9999;
-//        }
-//        return h;
-//    }
+    // <<<<
 
-    private static boolean matches (String sequence, int[] numericSTR, int i, HashMap <Character, Integer> letterMap) {
-        for (int j = 0; j < numericSTR.length; j++) {
-            char letter = sequence.charAt(i + j);
-            if (!letterMap.containsKey(letter)) {
-                return false;
-            }
-            else if (letterMap.get(letter) != numericSTR[j]) {
-                return false;
-            }
+    // FINISHED HASH
+    private static int hash(String str, int length) {
+        int hashValue = 0;
+        for (int i = 0; i < length; i++) {
+            hashValue = (R * hashValue + str.charAt(i)) % P;
         }
-        return true;
+        return hashValue;
     }
+
+    // UPDATED UPDATE HASH
+    private static int updateHash (String sequence, int i, int currentHash, int length, int highestPower){
+        currentHash = (currentHash - sequence.charAt(i) * highestPower % P + P) % P;
+        currentHash = (currentHash * R + sequence.charAt(i + length)) % P;
+        return currentHash;
+    }
+
+
+//    // UPDATED MATCHES but dont need it bc it is monte carlo
+//    private static boolean matches (String sequence, String STR, int index) {
+//        for (int i = 0; i < STR.length(); i++) {
+//            if (sequence.charAt(index+i) != STR.charAt(i)) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 }
