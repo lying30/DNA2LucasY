@@ -75,6 +75,14 @@ public class DNA {
 
     }
 
+//    private int hash(String key, int m) {
+//        long h = 0;
+//        for (int j = 0; j < m; j++) {
+//            h = (256*h + key.charAt(j)) % 9999;
+//        }
+//        return h;
+//    }
+
     private static boolean matches (String sequence, int[] numericSTR, int i, HashMap <Character, Integer> letterMap) {
         for (int j = 0; j < numericSTR.length; j++) {
             char letter = sequence.charAt(i + j);
