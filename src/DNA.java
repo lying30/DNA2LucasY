@@ -27,12 +27,16 @@ public class DNA {
         STR = STR.toUpperCase();
 
         int strHash = hash(STR, strLength);
-        int firstHash = hash(sequence, strLength);
+        int currentHash = hash(sequence, strLength);
 
         // highest power
         int highestPower = 1;
         for (int i = 0; i < strLength-1; i++) {
-            highestPower = (highestPower * R) % P
+            highestPower = (highestPower * R) % P;
+        }
+
+        if (sequenceLength < strLength) {
+            return 0;
         }
 
 //        HashMap<Character, Integer> letterMap = new HashMap<>();
@@ -57,24 +61,33 @@ public class DNA {
 
         // >>>>>
 
-        int[] numericSTR = new int[strLength];
-        for (int i = 0; i < strLength; i++){
-            if (letterMap.containsKey(STR.charAt(i)) && letterMap.get(STR.charAt(i)) != -1) {
-                numericSTR[i] = letterMap.get(STR.charAt(i));
-            }
-        }
+//        int[] numericSTR = new int[strLength];
+//        for (int i = 0; i < strLength; i++){
+//            if (letterMap.containsKey(STR.charAt(i)) && letterMap.get(STR.charAt(i)) != -1) {
+//                numericSTR[i] = letterMap.get(STR.charAt(i));
+//            }
+//        }
 
         for (int i = 0; i < sequenceLength - strLength; i++) {
-            int currentCount = 0;
-
-            while (i+strLength <= sequenceLength && matches(sequence, numericSTR, i, letterMap)) {
-                currentCount++;
-                i += strLength;
+            if (strHash == currentHash) {
+                int currentCount = 0;
+                // While within the bounds of sequence,
+                // And the next substring's hash in the sequence is equal to the hash of STR
+                // --> increment currentCount b/c we see another
+                while (i + currentCount * strLength < sequenceLength &&
+                        isNextSubstringMatch(sequence, i + currentCount * strLength, strLength, strHash)) {
+                    currentCount++;
+                }
+                // Update max count if that consecutive run of STRs is larger than the previous largest count
+                if (currentCount > maxCount) {
+                    maxCount = currentCount;
+                }
+                i += (currentCount - 1) * strLength;
+            }
+            if (i < sequenceLength -sequenceLength) {
+                currentHash = updateHash(sequence, i, currentHash, strLength, highestPower);
             }
 
-            if (currentCount > maxCount) {
-                maxCount = currentCount;
-            }
         }
         return maxCount;
 
@@ -96,6 +109,12 @@ public class DNA {
         currentHash = (currentHash - sequence.charAt(i) * highestPower % P + P) % P;
         currentHash = (currentHash * R + sequence.charAt(i + length)) % P;
         return currentHash;
+    }
+
+    // Compares next substring's hash to see if it is equal to the STR
+    private static boolean isNextSubstringMatch (String sequence, int start, int strLength, int strHash){
+        String nextSub = sequence.substring(start, start + strLength);
+        return hash(nextSub, strLength) == strHash;
     }
 
 
