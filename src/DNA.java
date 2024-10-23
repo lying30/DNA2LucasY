@@ -14,7 +14,9 @@ import java.util.HashMap;
 
 public class DNA {
 
+    // Radix for ASCII values
     private static final int R = 256;
+    // Large prime number
     private static final int P = 1000000007;
 
     public static int STRCount(String sequence, String STR) {
@@ -23,78 +25,50 @@ public class DNA {
         int sequenceLength = sequence.length();
         int maxCount = 0;
 
-        sequence = sequence.toUpperCase();
-        STR = STR.toUpperCase();
-
-        int strHash = hash(STR, strLength);
-        int currentHash = hash(sequence, strLength);
-
-        // highest power
-        int highestPower = 1;
-        for (int i = 0; i < strLength-1; i++) {
-            highestPower = (highestPower * R) % P;
-        }
-
+        // If the sequence is shorter than the STR, no matches are possible
         if (sequenceLength < strLength) {
             return 0;
         }
 
-//        HashMap<Character, Integer> letterMap = new HashMap<>();
-//        letterMap.put('A', 0);
-//        letterMap.put('G', 1);
-//        letterMap.put('T', 2);
-//        letterMap.put('C', 3);
-//        letterMap.put('N', -1);
+        // Convert both to uppercase for case-sensitive matching
+        sequence = sequence.toUpperCase();
+        STR = STR.toUpperCase();
 
+        // Get hash for the STR and first hash in sequence
+        long strHash = hash(STR, strLength);
+        long currentHash = hash(sequence, strLength);
 
-        //CHANGE ALL OF THIS FOR THE POLY ROLLY HASH FUNC >>>
-//PSUEDOCODE
-        // For the rest of the sequence (sequencelenght - strlength)
-        // If the current hash equals to the str hash:
-        //  while current hash substring starting from i + currentcount + strlength equals hash
-        //     increment currentcount
-        //  set max count = to max of max count and currentcount
-        //  move i forward by the (currentcount - 1) * strlength (skips the consecutve matches)
-        // if i is not at the last possible hash to compare in the sequence,
-        //    updatehash by removing the leftmost character and adding the new rightmost character
-        // return maxcount
+        // Precompute the highest power of the radix (R^(strLength-1) % P) to efficiently adjust the rolling hash
+        long highestPower = 1;
+        for (int i = 0; i < strLength - 1; i++) {
+            highestPower = (highestPower * R) % P;
+        }
 
-        // >>>>>
-
-//        int[] numericSTR = new int[strLength];
-//        for (int i = 0; i < strLength; i++){
-//            if (letterMap.containsKey(STR.charAt(i)) && letterMap.get(STR.charAt(i)) != -1) {
-//                numericSTR[i] = letterMap.get(STR.charAt(i));
-//            }
-//        }
-
+        // Traverse the sequence and compare the rolling hashes
         for (int i = 0; i <= sequenceLength - strLength; i++) {
+            // If the current hash matches the STR's hash, start counting consecutive repeats
             if (strHash == currentHash) {
                 int currentCount = 0;
-                int nextHash = currentHash;
-                // While within the bounds of sequence,
-                // And the next substring's hash in the sequence is equal to the hash of STR
-                // --> increment currentCount b/c we see another
 
+                // Count consecutive matches of the STR using hash comparisons
                 while (i + currentCount * strLength <= sequenceLength - strLength) {
+                    // Get hash of the next blocking
+                    long nextHash = hash(sequence.substring(i + currentCount * strLength, i + (currentCount + 1) * strLength), strLength);
+
+                    // If the hashes match increase the count
                     if (nextHash == strHash) {
                         currentCount++;
-
-                        if (i + (currentCount+1) * strLength <= sequenceLength) {
-                            nextHash = updateHash(sequence, i + currentCount * strLength, nextHash, strLength, highestPower);
-                        }
-                        else {
-                            break;
-                        }
-                    }
-                    else {
+                    } else {
+                        // Stop counting if they don't match
                         break;
                     }
                 }
                 // Update max count if that consecutive run of STRs is larger than the previous largest count
                 maxCount = Math.max(maxCount, currentCount);
+                // Move the index forward by the length of the matched STR block to avoid overlap
                 i += (currentCount - 1) * strLength;
             }
+            // Update the rolling hash for the next window to compare as long as it is not at the end of the sequence
             if (i < sequenceLength - strLength) {
                 currentHash = updateHash(sequence, i, currentHash, strLength, highestPower);
             }
@@ -104,11 +78,10 @@ public class DNA {
 
     }
 
-    // <<<<
-
-    // FINISHED HASH
-    private static int hash(String str, int length) {
-        int hashValue = 0;
+    // Computes the polynomial rolling hash for a given string of a given length
+    private static long hash(String str, int length) {
+        long hashValue = 0;
+        // Use a rolling polynomial hash to compute hash value
         for (int i = 0; i < length; i++) {
             hashValue = (R * hashValue + str.charAt(i)) % P;
         }
@@ -116,20 +89,16 @@ public class DNA {
     }
 
     // UPDATED UPDATE HASH
-    private static int updateHash (String sequence, int i, int currentHash, int length, int highestPower){
+    private static long updateHash(String sequence, int i, long currentHash, int length, long highestPower) {
+
+        // Remove the leading character from the calculating the current hash
         currentHash = (currentHash - sequence.charAt(i) * highestPower % P + P) % P;
+
+        // Add the next character's and getting the new hash
         currentHash = (currentHash * R + sequence.charAt(i + length)) % P;
+
+        // Return the updated hash value for the new window to look at
         return currentHash;
     }
 
-
-//    // UPDATED MATCHES but dont need it bc it is monte carlo
-//    private static boolean matches (String sequence, String STR, int index) {
-//        for (int i = 0; i < STR.length(); i++) {
-//            if (sequence.charAt(index+i) != STR.charAt(i)) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
 }
