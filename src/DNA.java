@@ -68,23 +68,34 @@ public class DNA {
 //            }
 //        }
 
-        for (int i = 0; i < sequenceLength - strLength; i++) {
+        for (int i = 0; i <= sequenceLength - strLength; i++) {
             if (strHash == currentHash) {
                 int currentCount = 0;
+                int nextHash = currentHash;
                 // While within the bounds of sequence,
                 // And the next substring's hash in the sequence is equal to the hash of STR
                 // --> increment currentCount b/c we see another
-                while (i + currentCount * strLength < sequenceLength &&
-                        isNextSubstringMatch(sequence, i + currentCount * strLength, strLength, strHash)) {
-                    currentCount++;
+
+                while (i + currentCount * strLength <= sequenceLength - strLength) {
+                    if (nextHash == strHash) {
+                        currentCount++;
+
+                        if (i + (currentCount+1) * strLength <= sequenceLength) {
+                            nextHash = updateHash(sequence, i + currentCount * strLength, nextHash, strLength, highestPower);
+                        }
+                        else {
+                            break;
+                        }
+                    }
+                    else {
+                        break;
+                    }
                 }
                 // Update max count if that consecutive run of STRs is larger than the previous largest count
-                if (currentCount > maxCount) {
-                    maxCount = currentCount;
-                }
+                maxCount = Math.max(maxCount, currentCount);
                 i += (currentCount - 1) * strLength;
             }
-            if (i < sequenceLength -sequenceLength) {
+            if (i < sequenceLength - strLength) {
                 currentHash = updateHash(sequence, i, currentHash, strLength, highestPower);
             }
 
@@ -109,12 +120,6 @@ public class DNA {
         currentHash = (currentHash - sequence.charAt(i) * highestPower % P + P) % P;
         currentHash = (currentHash * R + sequence.charAt(i + length)) % P;
         return currentHash;
-    }
-
-    // Compares next substring's hash to see if it is equal to the STR
-    private static boolean isNextSubstringMatch (String sequence, int start, int strLength, int strHash){
-        String nextSub = sequence.substring(start, start + strLength);
-        return hash(nextSub, strLength) == strHash;
     }
 
 
